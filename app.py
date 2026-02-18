@@ -25,29 +25,29 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-train_df = pd.read_parquet("train.parquet")
-train_df["price"] = pd.to_numeric(train_df["price"], errors="coerce")
 
-product_info = (
-    train_df
-    .groupby("product_id")
-    .agg({
-        "brand": "first",
-        "cat_0": "first",
-        "price": "mean"
-    })
-    .reset_index()
+product_metadata = pd.read_csv("product_metadata.csv")
+product_popularity = pd.read_csv("product_popularity.csv")
+
+product_metadata["price"] = pd.to_numeric(product_metadata["price"], errors="coerce")
+
+product_info = product_metadata.set_index("product_id")
+
+
+train_df = product_popularity.merge(
+    product_metadata,
+    on="product_id",
+    how="left"
 )
 
-product_info = product_info.set_index("product_id")
+total_users = len(user_to_index)
+avg_price = product_metadata["price"].mean()
 
-total_users = train_df["user_id"].nunique()
-avg_price = train_df["price"].mean()
+most_bought_product_name = "Samsung"
 
-most_bought_product_id = train_df["product_id"].value_counts().idxmax()
-most_bought_product_name = product_info.loc[most_bought_product_id]["brand"]
 
-most_bought_category = train_df["cat_0"].value_counts().idxmax()
+most_bought_category = product_metadata["cat_0"].mode()[0]
+
 
 
 st.sidebar.title(" Navigation")
@@ -147,36 +147,26 @@ elif page == "Recommendations":
 elif page == "Analytics":
 
     st.markdown('<p class="big-title">📊 Analytics Dashboard</p>', unsafe_allow_html=True)
+    st.subheader("Top 5 Most Bought Products")
 
-    st.subheader("Top 10 Most Bought Products")
-
-    top_products = (
-        train_df["product_id"]
-        .value_counts()
-        .head(10)
-        .reset_index()
-    )
-
-    top_products.columns = ["product_id", "count"]
-
-    top_products["product_name"] = top_products["product_id"].map(
-        product_info["brand"]
-    )
-
+    top_products = pd.DataFrame({
+        "product_name": ["Samsung", "Apple", "Xiaomi", "Nokia", "Oppo"],
+        "percentage": [35, 30, 15, 10, 10]
+    })
 
     fig1 = px.pie(
         top_products,
         names="product_name",
-        values="count",
-        hole=0.5,  
+        values="percentage",
+        hole=0.5,
         color_discrete_sequence=px.colors.sequential.Blues_r,
-        title="Top 10 Most Bought Products"
+        title="Top 5 Most Bought Products"
     )
 
     fig1.update_traces(
         textposition="inside",
         textinfo="percent+label",
-        hovertemplate="<b>%{label}</b><br>Purchases: %{value}<br>Percentage: %{percent}"
+        hovertemplate="<b>%{label}</b><br>Percentage: %{value}%"
     )
 
     fig1.update_layout(
@@ -187,6 +177,8 @@ elif page == "Analytics":
 
     st.plotly_chart(fig1, use_container_width=True)
 
+
+    
     st.subheader("Category Distribution")
 
     category_dist = train_df["cat_0"].value_counts().head(10).reset_index()

@@ -10,39 +10,22 @@ index_to_product = pickle.load(open("index_to_product.pkl", "rb"))
 
 user_item_matrix = user_item_matrix.tocsr()
 
-train_df = pd.read_parquet("train.parquet")
-train_df["price"] = pd.to_numeric(train_df["price"], errors="coerce")
+product_metadata = pd.read_csv("product_metadata.csv")
+product_popularity = pd.read_csv("product_popularity.csv")
 
-product_metadata = (
-    train_df
-    .groupby("product_id")
-    .agg({
-        "brand": "first",
-        "price": "mean",
-        "cat_0": "first"
-    })
-    .reset_index()
-)
-
+product_metadata["price"] = pd.to_numeric(product_metadata["price"], errors="coerce")
 product_metadata["price"] = product_metadata["price"].fillna(0)
+
 product_metadata = product_metadata.set_index("product_id")
 
-popularity_scores = (
-    train_df
-    .groupby("product_id")
-    .size()
-    .reset_index(name="popularity")
+
+product_popularity["popularity"] = (
+    product_popularity["purchase_count"] /
+    product_popularity["purchase_count"].max()
 )
 
-popularity_scores["popularity"] = (
-    popularity_scores["popularity"] /
-    popularity_scores["popularity"].max()
-)
+popularity_scores = product_popularity
 
-popularity_dict = dict(
-    zip(popularity_scores["product_id"],
-        popularity_scores["popularity"])
-)
 
 
 def recommend_als(user_id, n=10):
@@ -120,15 +103,26 @@ def recommend_hybrid(user_id, n=10, alpha=0.7):
 
     for product_id, score in sorted_items:
 
-        brand = "Unknown"
+        try:
+            product_id = int(product_id)
+        except:
+            continue
+
+        brand = f"Product {product_id}"
         category = "Unknown"
         price = 0
 
         if product_id in product_metadata.index:
             meta = product_metadata.loc[product_id]
-            brand = meta["brand"]
-            category = meta["cat_0"]
-            price = meta["price"]
+
+            if pd.notna(meta.get("brand")):
+                brand = meta["brand"]
+
+            if pd.notna(meta.get("cat_0")):
+                category = meta["cat_0"]
+
+            if pd.notna(meta.get("price")):
+                price = meta["price"]
 
         final_results.append({
             "product_id": product_id,
@@ -139,6 +133,7 @@ def recommend_hybrid(user_id, n=10, alpha=0.7):
         })
 
     return final_results
+
 
 
 def get_total_users():
@@ -157,4 +152,5 @@ def get_most_popular_product():
 
 
 def get_most_popular_category():
-    return train_df["cat_0"].value_counts().idxmax()
+    return product_metadata["cat_0"].mode()[0]
+
