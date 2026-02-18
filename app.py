@@ -65,7 +65,11 @@ if page == "Overview":
     st.header("Project Overview")
 
     st.markdown("""
-This project implements a scalable hybrid recommendation system designed for modern e-commerce platforms. The model leverages collaborative filtering using Alternating Least Squares (ALS) combined with a popularity-based ranking strategy to deliver stable and personalized recommendations. The recommendation engine constructs a sparse user-item interaction matrix from implicit behavioral signals such as product views, cart interactions, and purchases. Matrix factorization decomposes this matrix into latent user and product embeddings, allowing the system to identify hidden behavioral patterns even in the absence of explicit ratings. To enhance robustness and mitigate cold-start challenges, a popularity baseline is incorporated into the hybrid scoring mechanism. This ensures high-engagement products maintain visibility while preserving personalization quality. The dataset contains thousands of users and products with engineered temporal and categorical features. The final hybrid system balances personalization and global engagement signals, improving recall, stability, and diversity in recommendations.
+This project implements a scalable hybrid recommendation system designed for modern e-commerce platforms. 
+                The model leverages collaborative filtering using Alternating Least Squares (ALS) combined with a popularity-based ranking strategy to deliver stable and personalized recommendations. 
+                The recommendation engine constructs a sparse user-item interaction matrix from implicit behavioral signals such as product views, cart interactions, and purchases. Matrix factorization decomposes this matrix into latent user and product embeddings, allowing the system to identify hidden behavioral patterns even in the absence of explicit ratings. To enhance robustness and mitigate cold-start challenges, a popularity baseline is incorporated into the hybrid scoring mechanism. This ensures high-engagement products maintain visibility while preserving personalization quality. The dataset contains thousands of users and products with engineered temporal and categorical features. The final hybrid system balances personalization and global engagement signals, improving recall, stability, and diversity in recommendations.
+
+Github Link - https://github.com/NipunVar/ecommerce
 """)
 
     col1, col2, col3 = st.columns(3)
