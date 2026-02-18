@@ -207,8 +207,8 @@ Ecommerce/
 ## 👤 Author
 
 Nipun Varshneya
-LinkedIn: https://www.linkedin.com/in/nipun-varshneya-5983b0358/
-GitHub: https://github.com/NipunVar
+- LinkedIn: https://www.linkedin.com/in/nipun-varshneya-5983b0358/
+- GitHub: https://github.com/NipunVar
 
 ---
 

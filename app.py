@@ -9,9 +9,7 @@ st.set_page_config(
     page_icon="🛍️"
 )
 
-# =====================================================
-# GLOBAL STYLING
-# =====================================================
+
 st.markdown("""
 <style>
 .big-title {
@@ -26,9 +24,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# -----------------------
-# Load Data
-# -----------------------
+
 train_df = pd.read_parquet("train.parquet")
 train_df["price"] = pd.to_numeric(train_df["price"], errors="coerce")
 
@@ -53,9 +49,7 @@ most_bought_product_name = product_info.loc[most_bought_product_id]["brand"]
 
 most_bought_category = train_df["cat_0"].value_counts().idxmax()
 
-# -----------------------
-# Sidebar
-# -----------------------
+
 st.sidebar.title(" Navigation")
 
 page = st.sidebar.radio(
@@ -82,7 +76,7 @@ This project implements a scalable hybrid recommendation system designed for mod
 
     st.subheader(" Most Bought Product")
 
-    # Clickable product link (Google search example)
+   
     st.markdown(
         f"[{most_bought_product_name}](https://www.google.com/search?q={most_bought_product_name})",
         unsafe_allow_html=True
@@ -136,7 +130,7 @@ elif page == "Recommendations":
 
                     st.markdown(f"### #{rank} {row.get('brand', 'Product')}")
 
-                    # Clickable name
+                    
                     st.markdown(
                         f"[View Product](https://www.google.com/search?q={row.get('brand')})"
                     )
